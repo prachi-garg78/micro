@@ -1,0 +1,99 @@
+.MODEL SMALL
+.386
+.DATA
+    ARRAY1 DB 100 DUP(?)
+    ARRAY2 DB 100 DUP(?)
+    ARRAY3 DB 100 
+    D0 DB ?
+    D1 DW ?
+    message3 db 13,10,"enter  ARRAY1 $"
+    message4 db 13,10,"SORTED ARRAY: $"
+    message1 db 13,10,"Enter Length of ARRAYS :   $"
+.CODE
+.STARTUP
+
+    MOV DX,OFFSET MESSAGE1
+    MOV AH,09
+    INT 21H
+
+    MOV AH,01
+    INT 21H
+    SUB AL,30H
+   
+    MOV AH,0H
+    MOV CX,AX
+    MOV D1,CX
+
+    MOV DX,OFFSET MESSAGE3
+    MOV AH,09
+    INT 21H
+
+  ;ENTER ARRAY1
+    MOV BX,OFFSET ARRAY1
+L1: mov dl,' '
+    mov ah,02
+    int 21h 
+    mov ah,01   
+    int 21h
+    SUB al,30H
+    CMP AL,09H
+    JBE N3
+    SUB AL,07H
+    N3:
+    MOV [BX],Al
+    INC BX
+    loop L1
+
+    MOV DX,0H
+    MOV DX,D1
+    MOV DI,D1
+
+    MOV BX,DS
+    MOV ES,BX  
+    
+    ;SORTING
+ Q: MOV SI,OFFSET ARRAY1
+ 
+   DEC DX
+  
+   MOV CX,DX
+   L3:  MOV AL,[SI]
+   CMP AL,[SI+1]
+   JAE T
+    JMP R
+    T:MOV AL,[SI+1]
+    XCHG [SI],AL
+    MOV [SI+1],AL
+R:  INC SI
+    LOOP L3
+    
+   CMP DX,1H
+   JNE Q
+   
+   
+    ;OUTPUT
+    
+    MOV DX,OFFSET MESSAGE4
+    MOV AH,09
+    INT 21H
+    
+    MOV CX,D1
+    MOV DX,0H
+    MOV SI,OFFSET ARRAY1
+L4: mov dl,' '
+    mov ah,02
+    int 21h 
+    MOV AL,[SI]
+    INC SI
+    CMP AL,09H
+    JBE N1
+    ADD AL,07H
+    N1:
+    ADD AL,30H
+    MOV DL,AL
+    MOV AH,02
+    INT 21H
+    LOOP L4
+
+.EXIT
+END

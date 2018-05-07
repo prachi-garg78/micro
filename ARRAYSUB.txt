@@ -1,0 +1,104 @@
+.MODEL SMALL
+.386
+.DATA
+    ARRAY1 DB 100 DUP(?)
+    ARRAY2 DB 100 DUP(?)
+    ARRAY3 DB 100 DUP(?)
+    D0 DB ?
+    D1 DB ?
+    message3 db 13,10,"enter  ARRAY1 $"
+    message4 db 13,10,"enter  ARRAY2  $"
+    message1 db 13,10,"Enter Length of ARRAYS :   $"
+        message6 db 13,10,"the third array after addition is  $"
+.CODE
+.STARTUP
+
+;ENTER LENGTH OF ARRAY
+    MOV DX,OFFSET MESSAGE1
+    MOV AH,09
+    INT 21H
+
+    MOV AH,01
+    INT 21H
+    SUB AL,30H
+ 
+    MOV CL,AL
+    MOV D1,AL
+
+    MOV DX,OFFSET MESSAGE3
+    MOV AH,09
+    INT 21H
+
+    ;ENTER ARRAY1
+    MOV BX,OFFSET ARRAY1
+L1: mov dl,' '
+    mov ah,02
+    int 21h 
+    mov ah,01   
+    int 21h
+    SUB al,30H
+    CMP AL,09H
+    JBE N1
+    SUB AL,07H
+    N1:
+    MOV [BX],Al
+    INC BX
+    loop L1
+
+    ;ENTER ARRAY2
+    MOV BX,OFFSET ARRAY2
+    MOV CL,D1
+    MOV DX,OFFSET MESSAGE3
+    MOV AH,09
+    INT 21H
+L2: mov dl,' '
+    mov ah,02
+    int 21h 
+    mov ah,01   
+    int 21h
+    SUB al,30H
+    CMP AL,09H
+    JBE N2
+    SUB AL,07H
+    N2:
+    MOV [BX],Al
+    INC BX
+    LOOP L2
+
+    ;SUBTRACTION
+    MOV SI,OFFSET ARRAY1
+    MOV DI,OFFSET ARRAY2
+    MOV BX,OFFSET ARRAY3
+    MOV CL,D1
+L3: MOV AL,[SI]
+    SUB AL,[DI]
+    MOV [BX],AL
+    INC SI
+    INC DI
+    INC BX
+    LOOP L3
+
+    ;OUTPUT
+    MOV DX,OFFSET MESSAGE6
+    MOV AH,09
+    INT 21H
+    MOV CL,D1
+    MOV BX,OFFSET ARRAY3
+    MOV DX,0
+L4: mov dl,' '
+    mov ah,02
+    int 21h 
+    MOV AL,[BX]
+    INC BX
+    CMP AL,09H
+    JBE N3
+    SUB AL,07H
+    N3:
+    ADD AL,30H
+    MOV DL,AL
+    MOV AH,02
+    INT 21H
+    LOOP L4
+
+.EXIT
+END

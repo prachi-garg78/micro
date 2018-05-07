@@ -1,0 +1,135 @@
+.model small
+.386
+.data
+
+msg1 db 10,13,'Enter the dividend: $'
+msg2 db 10,13,'Enter the divisor: $'
+msg3 db 10,13,'The quotient is: $'
+msg4 db 10,13,'The remainder is: $'
+
+.code	
+.startup
+
+; EDX (H) EAX (L) / Divisor = EAX (Quo) , EDX (Rem)
+
+
+; Prints statement for input1
+MOV DX, OFFSET msg1
+MOV AH,09
+INT 21H
+
+;tab for formatting
+MOV DL,09H
+MOV AH,02
+INT 21H
+
+; Takes input in EDX
+MOV EDX,0H
+MOV CX,8
+L1: ROL EDX,4
+MOV AH,01H
+INT 21H
+SUB AL,30H
+CMP AL,09H
+JBE L2
+SUB AL,07H
+L2: ADD DL,AL
+LOOP L1
+
+; Takes input in EBX
+MOV EBX,0H
+MOV CX,8
+L3: ROL EBX,4
+MOV AH,01H
+INT 21H
+SUB AL,30H
+CMP AL,09H
+JBE L4
+SUB AL,07H
+L4: ADD BL,AL
+LOOP L3
+
+MOV EDI,EDX
+MOV ESI,EBX
+
+; Prints statement for input2
+MOV DX, OFFSET msg2
+MOV AH,09
+INT 21H
+
+;tab for formatting
+MOV DL,09H
+MOV AH,02
+INT 21H
+
+; Takes input in EBX
+MOV EBX,0H
+MOV CX,8
+L5: ROL EBX,4
+MOV AH,01H
+INT 21H
+SUB AL,30H
+CMP AL,09H
+JBE L6
+SUB AL,07H
+L6: ADD BL,AL
+LOOP L5
+
+MOV ECX,EBX
+MOV EDX,EDI
+MOV EAX,ESI
+DIV ECX
+
+MOV EBX,EAX
+MOV EBP,EDX
+
+; Prints statement for output1
+MOV DX, OFFSET msg3
+MOV AH,09
+INT 21H
+
+;tab for formatting
+MOV DL,09H
+MOV AH,02
+INT 21H
+
+; Prints EBX
+MOV CX,8
+L7: ROL EBX,4
+ MOV DL,BL
+ AND DL,0FH
+ CMP DL,09
+ JBE L8
+ ADD DL,07H
+L8: ADD DL,30H
+ MOV AH,02
+ INT 21H
+ LOOP L7
+
+MOV EBX,EBP
+
+; Prints statement for output2
+MOV DX, OFFSET msg4
+MOV AH,09
+INT 21H
+
+;tab for formatting
+MOV DL,09H
+MOV AH,02
+INT 21H
+
+; Prints EBX
+MOV CX,8
+L9: ROL EBX,4
+ MOV DL,BL
+ AND DL,0FH
+ CMP DL,09
+ JBE L10
+ ADD DL,07H
+L10: ADD DL,30H
+ MOV AH,02
+ INT 21H
+ LOOP L9
+
+.EXIT
+END

@@ -1,0 +1,94 @@
+.model small
+.386
+.data
+
+msg1 db 10,13,'Enter first number: $'
+msg2 db 10,13,'Enter second number: $'
+msg3 db 10,13,'The BCD sum is: $'
+
+.code
+.startup
+        
+; Prints statement for input1
+MOV DX, OFFSET msg1
+MOV AH,09
+INT 21H
+
+;tab for formatting
+MOV DL,09H
+MOV AH,02
+INT 21H
+
+; Takes input in EBX
+MOV EBX,0H
+MOV CX,8
+L1: ROL EBX,4
+MOV AH,01H
+INT 21H
+SUB AL,30H
+CMP AL,09H
+JBE L2
+SUB AL,07H
+L2: ADD BL,AL
+LOOP L1
+
+;Prints statement for input2
+MOV DX, OFFSET msg2
+MOV AH,09
+INT 21H
+
+;tab for formatting
+MOV DL,09H
+MOV AH,02
+INT 21H
+
+; Takes input in EDX
+MOV EDX,0H
+MOV CX,8
+L3: ROL EDX,4
+MOV AH,01H
+INT 21H
+SUB AL,30H
+CMP AL,09H
+JBE L4
+SUB AL,07H
+L4: ADD DL,AL
+LOOP L3
+
+CLC
+
+MOV EAX,EDX
+
+MOV CX,4
+L5: ADC AL,BL
+DAA
+ROR EAX,8
+ROR EBX,8
+LOOP L5
+
+MOV EBX,EAX
+
+; Prints statement for output1
+MOV DX, OFFSET msg3
+MOV AH,09
+INT 21H
+
+;tab for formatting
+MOV DL,09H
+MOV AH,02
+INT 21H
+
+MOV CX,8
+L6: ROL EBX,4
+ MOV DL,BL
+ AND DL,0FH
+ CMP DL,09
+ JBE L7
+ ADD DL,07H
+L7: ADD DL,30H
+ MOV AH,02
+ INT 21H
+ LOOP L6
+
+.EXIT
+END
